@@ -32,5 +32,5 @@ RSpec.describe Variant::Environment do
 	
 	subject {described_class.new(overrides)}
 	
-	it {is_expected.to have_attributes(default: :default)}
+	it {is_expected.to have_attributes(default_variant: :default)}
 end

@@ -23,10 +23,13 @@
 require 'thread/local'
 
 module Variant
+	DEVELOPMENT = :development
+	PRODUCTION = :production
+	TESTING = :testing
+	STAGING = :staging
+	
 	class Environment
 		extend Thread::Local
-		
-		DEVELOPMENT = :development
 		
 		# It is not safe to modify ENV.
 		def initialize(overrides = {}, default: DEVELOPMENT)
@@ -48,33 +51,29 @@ module Variant
 			ENV.to_hash.update(@overrides)
 		end
 		
-		def fetch(key, default = nil, &block)
+		def fetch(key, *arguments, &block)
 			@overrides.fetch(key) do
-				ENV.fetch(key, default, &block)
+				ENV.fetch(key, *arguments, &block)
 			end
 		end
 		
-		def default
+		def default_variant
 			self.fetch('VARIANT', DEVELOPMENT).to_sym
 		end
 		
-		def default= name
+		def default_variant= name
 			@overrides['VARIANT'] = name
 		end
 		
-		def [](name)
-			self.for(name)
+		def variant_for(name, default = nil)
+			self.fetch(variant_key(name)) do
+				self.fetch('VARIANT', default)
+			end&.to_sym
 		end
 		
-		def for(name, default = @default)
-			self.fetch(variant_key(name), default).to_sym
-		end
-		
-		def []=(name, value)
+		def override_variant(name, value)
 			@overrides[variant_key(name)] = value
 		end
-		
-		private
 		
 		def variant_key(name)
 			"#{name.upcase}_VARIANT"

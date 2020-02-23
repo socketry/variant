@@ -24,6 +24,9 @@ require_relative 'variant/version'
 require_relative 'variant/environment'
 
 module Variant
+	KEY = 'VARIANT'
+	SUFFIX = '_VARIANT'
+	
 	# Force the process-level variant to be the specified value.
 	# 
 	# @example
@@ -31,23 +34,23 @@ module Variant
 	#
 	def self.force!(value, environment = ENV)
 		# Clear any specifiv variants:
-		environment.delete_if{|key, value| key.end_with?('_VARIANT')}
+		environment.delete_if{|key, value| key.end_with?(SUFFIX)}
 		
 		# Set the specified variant:
-		environment['VARIANT'] = value.to_s
+		environment[KEY] = value.to_s
 		
 		return environment
 	end
 	
 	def self.default
-		Environment.instance.default
+		Environment.instance.default_variant
 	end
 	
 	def self.default= value
-		Environment.instance.default= value
+		Environment.instance.default_variant= value
 	end
 	
 	def self.for(*arguments)
-		Environment.instance.for(*arguments)
+		Environment.instance.variant_for(*arguments)
 	end
 end
