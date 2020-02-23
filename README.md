@@ -22,7 +22,7 @@ In your code, you access this like so:
 
 ```ruby
 Variant.default # => :production
-Variant.for(:database) # => :'production-aws'
+Variant.for(:database) # => :production
 ```
 
 ### Defaults
