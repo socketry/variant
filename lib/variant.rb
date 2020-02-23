@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'variant/version'
+require_relative 'variant/version'
+require_relative 'variant/environment'
 
 module Variant
 	# Force the process-level variant to be the specified value.
@@ -33,20 +34,20 @@ module Variant
 		environment.delete_if{|key, value| key.end_with?('_VARIANT')}
 		
 		# Set the specified variant:
-		environment['VARIANT'] = value
+		environment['VARIANT'] = value.to_s
 		
 		return environment
 	end
 	
 	def self.default
-		Wrapper.instance.default
+		Environment.instance.default
 	end
 	
 	def self.default= value
-		Wrapper.instance.default= value
+		Environment.instance.default= value
 	end
 	
-	def self.for(key)
-		Wrapper.instance.for(key)
+	def self.for(*arguments)
+		Environment.instance.for(*arguments)
 	end
 end

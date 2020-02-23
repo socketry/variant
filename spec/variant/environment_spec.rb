@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright, 2016, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2020, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,44 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'thread/local'
+require 'variant/environment'
 
-module Variant
-	class Wrapper
-		extend Thread::Local
-		
-		DEVELOPMENT = :development
-		
-		# It is not safe to modify ENV.
-		def initialize(environment = ENV.to_hash, default: DEVELOPMENT)
-			@environment = environment
-			@default = @environment.fetch('VARIANT', DEVELOPMENT).to_sym
-		end
-		
-		attr :environment
-		attr :default
-		
-		def default= name
-			@default = name.to_sym
-			@environment['VARIANT'] = name.to_s
-		end
-		
-		def [](name)
-			@environment.fetch(variant_key(name), @default).to_sym
-		end
-		
-		def for(name)
-			self[name]
-		end
-		
-		def []=(name, value)
-			@environment[variant_key(name)] = value.to_s
-		end
-		
-		private
-		
-		def variant_key(name)
-			"#{name.upcase}_VARIANT"
-		end
-	end
+RSpec.describe Variant::Environment do
+	let(:overrides) {
+		{
+			'VARIANT' => 'default',
+			'DATABASE_VARIANT' => 'specific'
+		}
+	}
+	
+	subject {described_class.new(overrides)}
+	
+	it {is_expected.to have_attributes(default: :default)}
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright, 2020, by Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2016, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,64 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'variant/wrapper'
+require 'thread/local'
 
-RSpec.describe Variant::Wrapper do
-	let(:environment) {
-		{
-			'VARIANT' => 'default',
-			'DATABASE_VARIANT' => 'specific'
-		}
-	}
-	
-	subject {described_class.new(environment)}
-	
-	it {is_expected.to have_attributes(default: :default)}
+module Variant
+	class Environment
+		extend Thread::Local
+		
+		DEVELOPMENT = :development
+		
+		# It is not safe to modify ENV.
+		def initialize(overrides = {}, default: DEVELOPMENT)
+			@overrides = overrides
+		end
+		
+		attr :overrides
+		
+		def with(overrides)
+			old_overrides = @overrides
+			@overrides = overrides
+			
+			yield self
+		ensure
+			@overrides = old_overrides
+		end
+		
+		def to_hash
+			ENV.to_hash.update(@overrides)
+		end
+		
+		def fetch(key, default = nil, &block)
+			@overrides.fetch(key) do
+				ENV.fetch(key, default, &block)
+			end
+		end
+		
+		def default
+			self.fetch('VARIANT', DEVELOPMENT).to_sym
+		end
+		
+		def default= name
+			@overrides['VARIANT'] = name
+		end
+		
+		def [](name)
+			self.for(name)
+		end
+		
+		def for(name, default = @default)
+			self.fetch(variant_key(name), default).to_sym
+		end
+		
+		def []=(name, value)
+			@overrides[variant_key(name)] = value
+		end
+		
+		private
+		
+		def variant_key(name)
+			"#{name.upcase}_VARIANT"
+		end
+	end
 end
