@@ -2,6 +2,8 @@
 
 Provides a model for application variants, including documenting behaviour like `RACK_ENV` and `APP_ENV`.
 
+[![Development](https://github.com/socketry/variant/workflows/Development/badge.svg?branch=master)](https://github.com/socketry/variant/actions?workflow=Development)
+
 ## Installation
 
 ```
