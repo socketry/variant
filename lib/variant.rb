@@ -29,6 +29,8 @@ module Variant
 	
 	# Force the process-level variant to be the specified value.
 	# 
+	# @reentrant Parallel modifications to `ENV` are undefined.
+	# 
 	# @example
 	# 	Variant.force!(:testing)
 	#

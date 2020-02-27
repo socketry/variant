@@ -30,7 +30,9 @@ RSpec.describe Variant do
 	it "can force the environment" do
 		environment = {'VARIANT' => 'production', 'DATABASE_VARIANT' => 'replica'}
 		
-		Variant.force!('test', environment)
+		stub_const("Variant::ENV", environment)
+		
+		Variant.force!('test')
 		
 		expect(environment).to include('VARIANT' => 'test')
 		expect(environment).to_not include('DATABASE_VARIANT')
