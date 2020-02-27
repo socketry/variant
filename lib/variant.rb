@@ -32,12 +32,18 @@ module Variant
 	# @example
 	# 	Variant.force!(:testing)
 	#
-	def self.force!(value, environment = ENV)
+	def self.force!(value, environment = ENV, **overrides)
 		# Clear any specific variants:
 		environment.delete_if{|key, value| key.end_with?(SUFFIX)}
 		
 		# Set the specified variant:
 		environment[KEY] = value.to_s
+		
+		overrides.each do |name, value|
+			key = name.upcase.to_s + SUFFIX
+			
+			environment[key] = value.to_s
+		end
 		
 		return environment
 	end
