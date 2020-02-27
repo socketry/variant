@@ -33,7 +33,7 @@ module Variant
 	# 	Variant.force!(:testing)
 	#
 	def self.force!(value, environment = ENV)
-		# Clear any specifiv variants:
+		# Clear any specific variants:
 		environment.delete_if{|key, value| key.end_with?(SUFFIX)}
 		
 		# Set the specified variant:
