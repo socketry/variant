@@ -33,4 +33,10 @@ RSpec.describe Variant::Environment do
 	subject {described_class.new(overrides)}
 	
 	it {is_expected.to have_attributes(default_variant: :default)}
+	
+	describe '#to_hash' do
+		it "can generate hash with overrides" do
+			expect(subject.to_hash).to include('VARIANT' => 'default')
+		end
+	end
 end

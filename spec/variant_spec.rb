@@ -35,4 +35,36 @@ RSpec.describe Variant do
 		expect(environment).to include('VARIANT' => 'test')
 		expect(environment).to_not include('DATABASE_VARIANT')
 	end
+	
+	describe '.default' do
+		it 'can get default variant' do
+			expect(Variant.default).to_not be_nil
+		end
+	end
+	
+	describe '.default=' do
+		it 'can set default variant' do
+			Thread.new do
+				Variant.default = :testing
+				expect(Variant.default).to be :testing
+			end.join
+		end
+	end
+	
+	describe '.for' do
+		it "gives the default variant if a specific variant is not specified" do
+			Thread.new do
+				Variant.default = :staging
+				expect(Variant.for(:database)).to be :staging
+			end.join
+		end
+		
+		it "gives the specific variant if a specific variant is specified" do
+			Thread.new do
+				Variant.default = :staging
+				Variant::Environment.instance.override_variant(:database, :testing)
+				expect(Variant.for(:database)).to be :testing
+			end.join
+		end
+	end
 end
