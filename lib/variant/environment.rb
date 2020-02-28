@@ -65,7 +65,7 @@ module Variant
 			@overrides['VARIANT'] = name
 		end
 		
-		def variant_for(name, default = nil)
+		def variant_for(name, default = DEVELOPMENT)
 			self.fetch(variant_key(name)) do
 				self.fetch('VARIANT', default)
 			end&.to_sym

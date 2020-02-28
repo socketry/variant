@@ -54,14 +54,20 @@ RSpec.describe Variant do
 	end
 	
 	describe '.for' do
-		it "gives the default variant if a specific variant is not specified" do
+		it "gives the development variant if no default or override variant specified" do
+			Thread.new do
+				expect(Variant.for(:database)).to be :development
+			end.join
+		end
+		
+		it "gives the default variant if an override variant is not specified" do
 			Thread.new do
 				Variant.default = :staging
 				expect(Variant.for(:database)).to be :staging
 			end.join
 		end
 		
-		it "gives the specific variant if a specific variant is specified" do
+		it "gives the specific variant if an override variant is specified" do
 			Thread.new do
 				Variant.default = :staging
 				Variant::Environment.instance.override_variant(:database, :testing)
