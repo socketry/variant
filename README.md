@@ -12,6 +12,17 @@ bundle add variant
 
 ## Usage
 
+Variants are used to indicate the default configuration for an application. There are four suggested variants:
+
+| Variant     | Data                                | Usage                                  |
+|-------------|-------------------------------------|----------------------------------------|
+| Production  | Persistent, real data & interfaces. | Instance/cluster.                      |
+| Staging     | Duplicate/subset of production.     | Instance/cluster.                      |
+| Development | Fixtures, sample data.              | Local machine. **Default** variant.    |
+| Testing     | Fixtures, mocked interfaces.        | Local machine, continuous integration. |
+
+### Environment Variables
+
 The general mechanism for specifying a variant is on the command line before running the application:
 
 ```
@@ -25,11 +36,9 @@ Variant.default # => :production
 Variant.for(:database) # => :production
 ```
 
-### Defaults
-
-The default variant is `:development`.
-
 ### System-specific Variants
+
+You can specify system-specific variants. These are useful when you have e.g. 2 different database clusters, or you want to run a development instance connected to a production database.
 
 ```
 VARIANT=production DATABASE_VARIANT=production-aws
@@ -42,7 +51,26 @@ Variant.default # => :production
 Variant.for(:database) # => :'production-aws'
 ```
 
-If you don't specify a system-specific variant, you will get the default.
+If you don't specify a system-specific variant, it will be the same as the default variant.
+
+### Bake Integration
+
+This gem provides [bake](https://github.com/socketry/bake) recipes for setting the variants as outlined above.
+
+```
+bake variant:production ...
+bake variant:staging ...
+bake variant:development ...
+bake variant:testing ...
+```
+
+In addition, the tasks also support specifying overrides:
+
+```
+% bake variant:development database=production variant:show
+0.01s     info: Environment [pid=417910] [2020-02-29 11:43:25 +1300]
+							| {"VARIANT"=>"development", "DATABASE_VARIANT"=>"production"}
+```
 
 ## Contributing
 
