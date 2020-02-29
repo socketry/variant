@@ -69,7 +69,7 @@ In addition, the tasks also support specifying overrides:
 ```
 % bake variant:development database=production variant:show
 0.01s     info: Environment [pid=417910] [2020-02-29 11:43:25 +1300]
-							| {"VARIANT"=>"development", "DATABASE_VARIANT"=>"production"}
+              | {"VARIANT"=>"development", "DATABASE_VARIANT"=>"production"}
 ```
 
 ## Contributing
